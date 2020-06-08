@@ -43,6 +43,7 @@ import NextJsSSRModuleCachePlugin from './webpack/plugins/nextjs-ssr-module-cach
 import PagesManifestPlugin from './webpack/plugins/pages-manifest-plugin'
 import { ProfilingPlugin } from './webpack/plugins/profiling-plugin'
 import { ReactLoadablePlugin } from './webpack/plugins/react-loadable-plugin'
+import { PartialHydrationPlugin } from './webpack/plugins/partial-hydration-plugin'
 import { ServerlessPlugin } from './webpack/plugins/serverless-plugin'
 import WebpackConformancePlugin, {
   DuplicatePolyfillsConformanceCheck,
@@ -967,6 +968,7 @@ export default async function getBaseWebpackConfig(
           ].filter(Boolean),
         }),
       new WellKnownErrorsPlugin(),
+      new PartialHydrationPlugin(),
     ].filter((Boolean as any) as ExcludesFalse),
   }
 
