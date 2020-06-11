@@ -60,7 +60,7 @@ module.exports = babelLoader.custom((babel) => {
         hasModern: opts.hasModern,
         babelPresetPlugins: opts.babelPresetPlugins,
         development: opts.development,
-        hasReactRefresh: opts.hasReactRefresh,
+        hasReactRefresh: false,
       }
       const filename = join(opts.cwd, 'noop.js')
       const loader = Object.assign(

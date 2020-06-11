@@ -179,6 +179,22 @@ function createLoadableComponent(loadFn, options) {
     }
 
     return React.useMemo(() => {
+      if (opts.interactive) {
+        return React.createElement(
+          'div',
+          { style: { display: 'contents' } },
+          React.createElement('script', {
+            type: 'application/json',
+            dangerouslySetInnerHTML: {
+              __html: JSON.stringify({
+                props,
+              }),
+            },
+            'data-next-interactive': opts.modules[0],
+          }),
+          opts.render(state.loaded, props)
+        )
+      }
       if (state.loading || state.error) {
         return React.createElement(opts.loading, {
           isLoading: state.loading,

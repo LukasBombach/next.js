@@ -731,10 +731,7 @@ export async function renderToHTML(
   let html = renderDocument(Document, {
     ...renderOpts,
     // Only enabled in production as development mode has features relying on HMR (style injection for example)
-    unstable_runtimeJS:
-      process.env.NODE_ENV === 'production'
-        ? pageConfig.unstable_runtimeJS
-        : undefined,
+    unstable_runtimeJS: pageConfig.unstable_runtimeJS,
     dangerousAsPath: router.asPath,
     ampState,
     props,

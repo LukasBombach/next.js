@@ -818,9 +818,48 @@ export class NextScript extends Component<OriginProps> {
         ) : null}
         {!disableRuntimeJS && this.getPolyfillScripts()}
         {!disableRuntimeJS && appScript}
-        {!disableRuntimeJS && page !== '/_error' && pageScript}
-        {disableRuntimeJS ? null : this.getDynamicChunks()}
-        {disableRuntimeJS ? null : this.getScripts()}
+        {page !== '/_error' && pageScript}
+        {this.getDynamicChunks()}
+        {disableRuntimeJS ? (
+          <>
+            <script
+              key={CLIENT_STATIC_FILES_RUNTIME_WEBPACK}
+              src={`${assetPrefix}/_next/${CLIENT_STATIC_FILES_RUNTIME_WEBPACK}${_devOnlyInvalidateCacheQueryString}`}
+              nonce={this.props.nonce}
+              crossOrigin={
+                this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN
+              }
+            />
+            <script
+              nonce={this.props.nonce}
+              crossOrigin={
+                this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN
+              }
+              dangerouslySetInnerHTML={{
+                __html: `
+                  (function () {
+                    var c = document.querySelector('[data-next-hide-fouc]')
+                    if (c) {
+                      c.parentNode.removeChild(c)
+                    }
+                    if (window.__NEXT_P) {
+                      console.log('yea')
+                      window.__NEXT_P.forEach(boot)
+                    }
+                    window.__NEXT_P = [];
+                    window.__NEXT_P.push = boot
+                    function boot(data) {
+                      console.log('boot', data)
+                      data[1]()
+                    }
+                  }())
+                  `,
+              }}
+            />
+          </>
+        ) : (
+          this.getScripts()
+        )}
       </>
     )
   }

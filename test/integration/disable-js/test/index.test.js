@@ -12,6 +12,7 @@ import {
   launchApp,
   killApp,
 } from 'next-test-utils'
+import webdriver from 'next-webdriver'
 
 const appDir = join(__dirname, '../')
 let appPort
@@ -96,6 +97,24 @@ describe('disabled runtime JS', () => {
         const url = $(element).attr('href')
         expect($(`script[src="${url}"]`).length).toBe(1)
       })
+    })
+  })
+
+  describe('interactive mode', () => {
+    let appPort
+    let app
+
+    beforeAll(async () => {
+      appPort = await findPort()
+      app = await launchApp(join(__dirname, '../'), appPort)
+    })
+
+    afterAll(() => killApp(app))
+    it('should work', async () => {
+      const browser = await webdriver(appPort, '/interactive')
+
+      const el = await browser.elementByCss('[data-next-interactive]')
+      expect(el).toBeTruthy()
     })
   })
 })

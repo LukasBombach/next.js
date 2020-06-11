@@ -57,7 +57,7 @@ const babel = async (
         babelPresetPlugins: [],
         hasModern,
         development,
-        hasReactRefresh: Boolean(!isServer && development),
+        hasReactRefresh: false, //Boolean(!isServer && development),
       },
     })(code, null)
 

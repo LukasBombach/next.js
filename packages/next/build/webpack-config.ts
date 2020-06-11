@@ -171,7 +171,7 @@ export default async function getBaseWebpackConfig(
     }
   }
 
-  const hasReactRefresh = dev && !isServer
+  const hasReactRefresh = false
 
   const distDir = path.join(dir, config.distDir)
   const defaultLoaders = {
@@ -293,6 +293,7 @@ export default async function getBaseWebpackConfig(
       'next/router': 'next/dist/client/router.js',
       'next/config': 'next/dist/next-server/lib/runtime-config.js',
       'next/dynamic': 'next/dist/next-server/lib/dynamic.js',
+      'next/interactive': 'next/dist/next-server/lib/interactive.js',
       next: NEXT_PROJECT_ROOT,
       [PAGES_DIR_ALIAS]: pagesDir,
       [DOT_NEXT_ALIAS]: distDir,
@@ -714,6 +715,7 @@ export default async function getBaseWebpackConfig(
         'error-loader',
         'next-babel-loader',
         'next-client-pages-loader',
+        'next-client-interactive-loader',
         'next-data-loader',
         'next-serverless-loader',
         'noop-loader',
@@ -769,10 +771,20 @@ export default async function getBaseWebpackConfig(
               ].filter(Boolean)
             : hasReactRefresh
             ? [
+                !isServer &&
+                  require.resolve(
+                    'next/dist/build/webpack/loaders/next-client-interactive-loader'
+                  ),
                 require.resolve('@next/react-refresh-utils/loader'),
                 defaultLoaders.babel,
-              ]
-            : defaultLoaders.babel,
+              ].filter(Boolean)
+            : [
+                !isServer &&
+                  require.resolve(
+                    'next/dist/build/webpack/loaders/next-client-interactive-loader'
+                  ),
+                defaultLoaders.babel,
+              ].filter(Boolean),
         },
       ].filter(Boolean),
     },
