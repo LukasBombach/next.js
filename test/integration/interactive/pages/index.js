@@ -1,9 +1,9 @@
-import interactive from 'next/interactive'
+import interactive from 'next/dynamic'
 
 const Button = interactive(() => import('../components/Button'))
 
 export const config = {
-  unstable_runtimeJS: false,
+  unstable_runtimeJS: true,
 }
 
 const Main = () => (

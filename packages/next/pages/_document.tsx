@@ -503,6 +503,74 @@ export class NextScript extends Component<OriginProps> {
     })
   }
 
+  getInteractiveScripts() {
+    const {
+      dynamicImports,
+      assetPrefix,
+      files,
+      isDevelopment,
+    } = this.context._documentProps
+    const { _devOnlyInvalidateCacheQueryString } = this.context
+
+    return dedupe(dynamicImports).map((bundle: any) => {
+      let modernProps = {}
+      if (process.env.__NEXT_MODERN_BUILD) {
+        modernProps = bundle.file.endsWith('.module.js')
+          ? { type: 'module' }
+          : { noModule: true }
+      }
+
+      if (!bundle.file.endsWith('.js') || files.includes(bundle.file))
+        return null
+
+      return (
+        <script
+          async={!isDevelopment}
+          key={bundle.file}
+          src={`${assetPrefix}/_next/${encodeURI(
+            bundle.file
+          )}${_devOnlyInvalidateCacheQueryString}`}
+          nonce={this.props.nonce}
+          crossOrigin={
+            this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN
+          }
+          {...modernProps}
+        />
+      )
+    })
+  }
+
+  getInteractiveRuntime() {
+    const { assetPrefix, isDevelopment } = this.context._documentProps
+    const { _devOnlyInvalidateCacheQueryString } = this.context
+
+    // console.log('normalScripts', normalScripts)
+    // console.log('lowPriorityScripts', lowPriorityScripts)
+
+    return ['static/runtime/webpack.js'].map((file) => {
+      let modernProps = {}
+      if (process.env.__NEXT_MODERN_BUILD) {
+        modernProps = file.endsWith('.module.js')
+          ? { type: 'module' }
+          : { noModule: true }
+      }
+      return (
+        <script
+          key={file}
+          src={`${assetPrefix}/_next/${encodeURI(
+            file
+          )}${_devOnlyInvalidateCacheQueryString}`}
+          nonce={this.props.nonce}
+          async={!isDevelopment}
+          crossOrigin={
+            this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN
+          }
+          {...modernProps}
+        />
+      )
+    })
+  }
+
   getScripts() {
     const {
       assetPrefix,
@@ -684,7 +752,10 @@ export class NextScript extends Component<OriginProps> {
             }}
           />
         ) : null}
-        {!disableRuntimeJS && this.getPolyfillScripts()}
+        {disableRuntimeJS ? this.getInteractiveScripts() : null}
+        {disableRuntimeJS ? this.getInteractiveRuntime() : null}
+
+        {disableRuntimeJS ? null : this.getPolyfillScripts()}
         {disableRuntimeJS ? null : this.getDynamicChunks()}
         {disableRuntimeJS ? null : this.getScripts()}
       </>

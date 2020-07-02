@@ -34,7 +34,7 @@ export default function ({
     visitor: {
       ImportDeclaration(path: NodePath<BabelTypes.ImportDeclaration>) {
         let source = path.node.source.value
-        if (source !== 'next/dynamic') return
+        if (!['next/dynamic', 'next/interactive'].includes(source)) return
 
         let defaultSpecifier = path.get('specifiers').find((specifier) => {
           return specifier.isImportDefaultSpecifier()
@@ -70,7 +70,7 @@ export default function ({
           let args = callExpression.get('arguments')
           if (args.length > 2) {
             throw callExpression.buildCodeFrameError(
-              'next/dynamic only accepts 2 arguments'
+              `${source} only accepts 2 arguments`
             )
           }
 
@@ -161,6 +161,10 @@ export default function ({
                 t.objectProperty(
                   t.identifier('modules'),
                   t.arrayExpression(dynamicImports)
+                ),
+                t.objectProperty(
+                  t.identifier('interactive'),
+                  t.booleanLiteral(true)
                 ),
               ])
             )
