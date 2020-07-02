@@ -343,7 +343,7 @@ export class Head extends Component<
 
     return (
       <head {...this.props}>
-        {this.context._documentProps.isDevelopment && (
+        {this.context._documentProps.isDevelopment && !disableRuntimeJS && (
           <>
             <style
               data-next-hide-fouc
