@@ -311,6 +311,7 @@ export default async function getBaseWebpackConfig(
       'next/router': 'next/dist/client/router.js',
       'next/config': 'next/dist/next-server/lib/runtime-config.js',
       'next/dynamic': 'next/dist/next-server/lib/dynamic.js',
+      'next/interactive': 'next/dist/next-server/lib/interactive.js',
       next: NEXT_PROJECT_ROOT,
       [PAGES_DIR_ALIAS]: pagesDir,
       [DOT_NEXT_ALIAS]: distDir,

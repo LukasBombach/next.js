@@ -1,3 +1,7 @@
+import interactive from 'next/interactive'
+
+const Button = interactive(() => import('../components/Button'))
+
 export const config = {
   unstable_runtimeJS: false,
 }
@@ -5,7 +9,7 @@ export const config = {
 const Main = () => (
   <main>
     <h1>Hello World!</h1>
-    <button onClick={() => console.log('Interaction works')}>Click me</button>
+    <Button />
   </main>
 )
 
