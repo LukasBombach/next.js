@@ -22,6 +22,8 @@ export const STRING_LITERAL_DROP_BUNDLE = '__NEXT_DROP_CLIENT_FILE__'
 export const CLIENT_STATIC_FILES_RUNTIME_PATH = `${CLIENT_STATIC_FILES_PATH}/${CLIENT_STATIC_FILES_RUNTIME}`
 // static/runtime/main.js
 export const CLIENT_STATIC_FILES_RUNTIME_MAIN = `${CLIENT_STATIC_FILES_RUNTIME_PATH}/main`
+// static/runtime/interactive.js
+export const CLIENT_STATIC_FILES_RUNTIME_INTERACTIVE = `${CLIENT_STATIC_FILES_RUNTIME_PATH}/interactive`
 // static/runtime/react-refresh.js
 export const CLIENT_STATIC_FILES_RUNTIME_REACT_REFRESH = `${CLIENT_STATIC_FILES_RUNTIME_PATH}/react-refresh`
 // static/runtime/amp.js

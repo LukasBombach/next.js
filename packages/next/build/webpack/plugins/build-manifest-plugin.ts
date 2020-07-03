@@ -5,6 +5,7 @@ import {
   BUILD_MANIFEST,
   CLIENT_STATIC_FILES_PATH,
   CLIENT_STATIC_FILES_RUNTIME_MAIN,
+  CLIENT_STATIC_FILES_RUNTIME_INTERACTIVE,
   CLIENT_STATIC_FILES_RUNTIME_POLYFILLS,
   CLIENT_STATIC_FILES_RUNTIME_REACT_REFRESH,
   CLIENT_STATIC_FILES_RUNTIME_AMP,
@@ -88,6 +89,13 @@ export default class BuildManifestPlugin {
 
         const mainJsFiles: string[] = mainJsChunk?.files.filter(isJsFile) ?? []
 
+        const interactiveJsChunk = chunks.find(
+          (c) => c.name === CLIENT_STATIC_FILES_RUNTIME_INTERACTIVE
+        )
+
+        const interactiveJsFiles: string[] =
+          interactiveJsChunk?.files.filter(isJsFile) ?? []
+
         const polyfillChunk = chunks.find(
           (c) => c.name === CLIENT_STATIC_FILES_RUNTIME_POLYFILLS
         )
@@ -131,7 +139,11 @@ export default class BuildManifestPlugin {
             filesForEntry.push(file.replace(/\\/g, '/'))
           }
 
-          assetMap.pages[pagePath] = [...mainJsFiles, ...filesForEntry]
+          assetMap.pages[pagePath] = [
+            ...mainJsFiles,
+            ...interactiveJsFiles,
+            ...filesForEntry,
+          ]
         }
 
         // Add the runtime build manifest file (generated later in this file)
