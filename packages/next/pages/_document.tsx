@@ -512,32 +512,58 @@ export class NextScript extends Component<OriginProps> {
     } = this.context._documentProps
     const { _devOnlyInvalidateCacheQueryString } = this.context
 
-    return dedupe(dynamicImports).map((bundle: any) => {
-      let modernProps = {}
-      if (process.env.__NEXT_MODERN_BUILD) {
-        modernProps = bundle.file.endsWith('.module.js')
-          ? { type: 'module' }
-          : { noModule: true }
-      }
+    const chunks = dedupe(dynamicImports)
+      .filter(
+        (bundle: any) =>
+          bundle.file.endsWith('.js') && !files.includes(bundle.file)
+      )
+      .map((bundle: any) => {
+        console.log('bundle', bundle)
+        return bundle
+      })
+      .map((bundle: any) => ({
+        id: bundle.id,
+        file: bundle.file,
+        nonce: this.props.nonce,
+        crossOrigin: this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN,
+        src: `${assetPrefix}/_next/${encodeURI(
+          bundle.file
+        )}${_devOnlyInvalidateCacheQueryString}`,
+        modernProps: process.env.__NEXT_MODERN_BUILD
+          ? bundle.file.endsWith('.module.js')
+            ? { type: 'module' }
+            : { noModule: true }
+          : {},
+      }))
 
-      if (!bundle.file.endsWith('.js') || files.includes(bundle.file))
-        return null
-
-      return (
+    const bundleScriptTags = chunks.map(
+      ({ file, src, nonce, crossOrigin, modernProps }) => (
         <script
           async={!isDevelopment}
-          key={bundle.file}
-          src={`${assetPrefix}/_next/${encodeURI(
-            bundle.file
-          )}${_devOnlyInvalidateCacheQueryString}`}
-          nonce={this.props.nonce}
-          crossOrigin={
-            this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN
-          }
+          key={file}
+          src={src}
+          nonce={nonce}
+          crossOrigin={crossOrigin}
           {...modernProps}
         />
       )
-    })
+    )
+
+    const runtime = (
+      <script
+        key="hydration-runtime"
+        dangerouslySetInnerHTML={{
+          __html: `
+        window.__NEXT_I = Object.assign(
+          window.__NEXT_I || {},
+          { ${chunks.map((c) => `"${c.id}": "${c.file}"`).join(', ')} }
+        )
+      `,
+        }}
+      />
+    )
+
+    return [...bundleScriptTags, runtime]
   }
 
   getInteractiveRuntime() {
