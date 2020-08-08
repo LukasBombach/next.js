@@ -573,7 +573,9 @@ export class NextScript extends Component<OriginProps> {
     // console.log('normalScripts', normalScripts)
     // console.log('lowPriorityScripts', lowPriorityScripts)
 
-    return ['static/runtime/webpack.js'].map((file) => {
+    return [
+      'static/runtime/webpack.js' /* , 'static/runtime/interactive.js' */,
+    ].map((file) => {
       let modernProps = {}
       if (process.env.__NEXT_MODERN_BUILD) {
         modernProps = file.endsWith('.module.js')
@@ -779,8 +781,8 @@ export class NextScript extends Component<OriginProps> {
           />
         ) : null}
         {disableRuntimeJS ? this.getInteractiveScripts() : null}
+        {disableRuntimeJS ? this.getDynamicChunks() : null}
         {disableRuntimeJS ? this.getInteractiveRuntime() : null}
-
         {disableRuntimeJS ? null : this.getPolyfillScripts()}
         {disableRuntimeJS ? null : this.getDynamicChunks()}
         {disableRuntimeJS ? null : this.getScripts()}

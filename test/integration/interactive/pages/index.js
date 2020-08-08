@@ -1,10 +1,10 @@
-import interactive from 'next/dynamic'
+import interactive from 'next/interactive'
 
 const Button = interactive(() => import('../components/Button'))
 
-/* export const config = {
+export const config = {
   unstable_runtimeJS: false,
-} */
+}
 
 const Main = () => (
   <main>
