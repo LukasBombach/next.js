@@ -780,9 +780,13 @@ export class NextScript extends Component<OriginProps> {
             }}
           />
         ) : null}
-        {disableRuntimeJS ? this.getInteractiveScripts() : null}
+        {/* disableRuntimeJS ? this.getInteractiveScripts() : null */}
+        {/* disableRuntimeJS ? this.getDynamicChunks() : null */}
+        {/* disableRuntimeJS ? this.getInteractiveRuntime() : null */}
+        {disableRuntimeJS ? this.getPolyfillScripts() : null}
         {disableRuntimeJS ? this.getDynamicChunks() : null}
-        {disableRuntimeJS ? this.getInteractiveRuntime() : null}
+        {disableRuntimeJS ? this.getScripts() : null}
+
         {disableRuntimeJS ? null : this.getPolyfillScripts()}
         {disableRuntimeJS ? null : this.getDynamicChunks()}
         {disableRuntimeJS ? null : this.getScripts()}
