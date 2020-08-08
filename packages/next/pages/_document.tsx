@@ -504,99 +504,44 @@ export class NextScript extends Component<OriginProps> {
   }
 
   getInteractiveScripts() {
-    const {
-      dynamicImports,
-      assetPrefix,
-      files,
-      isDevelopment,
-    } = this.context._documentProps
-    const { _devOnlyInvalidateCacheQueryString } = this.context
+    const dynamicChunks = this.getDynamicChunks()
+    console.log('dynamicChunks', dynamicChunks)
 
-    const chunks = dedupe(dynamicImports)
-      .filter(
-        (bundle: any) =>
-          bundle.file.endsWith('.js') && !files.includes(bundle.file)
-      )
-      .map((bundle: any) => {
-        console.log('bundle', bundle)
-        return bundle
-      })
-      .map((bundle: any) => ({
-        id: bundle.id,
-        file: bundle.file,
-        nonce: this.props.nonce,
-        crossOrigin: this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN,
-        src: `${assetPrefix}/_next/${encodeURI(
-          bundle.file
-        )}${_devOnlyInvalidateCacheQueryString}`,
-        modernProps: process.env.__NEXT_MODERN_BUILD
-          ? bundle.file.endsWith('.module.js')
-            ? { type: 'module' }
-            : { noModule: true }
-          : {},
-      }))
+    const __html = `console.log("getInteractiveScripts")`
 
-    const bundleScriptTags = chunks.map(
-      ({ file, src, nonce, crossOrigin, modernProps }) => (
-        <script
-          async={!isDevelopment}
-          key={file}
-          src={src}
-          nonce={nonce}
-          crossOrigin={crossOrigin}
-          {...modernProps}
-        />
-      )
+    return (
+      <script key="hydration-runtime" dangerouslySetInnerHTML={{ __html }} />
     )
-
-    const runtime = (
-      <script
-        key="hydration-runtime"
-        dangerouslySetInnerHTML={{
-          __html: `
-        window.__NEXT_I = Object.assign(
-          window.__NEXT_I || {},
-          { ${chunks.map((c) => `"${c.id}": "${c.file}"`).join(', ')} }
-        )
-      `,
-        }}
-      />
-    )
-
-    return [...bundleScriptTags, runtime]
   }
 
   getInteractiveRuntime() {
     const { assetPrefix, isDevelopment } = this.context._documentProps
     const { _devOnlyInvalidateCacheQueryString } = this.context
 
-    // console.log('normalScripts', normalScripts)
-    // console.log('lowPriorityScripts', lowPriorityScripts)
-
-    return [
-      'static/runtime/webpack.js' /* , 'static/runtime/interactive.js' */,
-    ].map((file) => {
-      let modernProps = {}
-      if (process.env.__NEXT_MODERN_BUILD) {
-        modernProps = file.endsWith('.module.js')
-          ? { type: 'module' }
-          : { noModule: true }
+    return ['static/runtime/webpack.js', 'static/runtime/interactive.js'].map(
+      (file) => {
+        let modernProps = {}
+        if (process.env.__NEXT_MODERN_BUILD) {
+          modernProps = file.endsWith('.module.js')
+            ? { type: 'module' }
+            : { noModule: true }
+        }
+        return (
+          <script
+            key={file}
+            src={`${assetPrefix}/_next/${encodeURI(
+              file
+            )}${_devOnlyInvalidateCacheQueryString}`}
+            nonce={this.props.nonce}
+            async={!isDevelopment}
+            crossOrigin={
+              this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN
+            }
+            {...modernProps}
+          />
+        )
       }
-      return (
-        <script
-          key={file}
-          src={`${assetPrefix}/_next/${encodeURI(
-            file
-          )}${_devOnlyInvalidateCacheQueryString}`}
-          nonce={this.props.nonce}
-          async={!isDevelopment}
-          crossOrigin={
-            this.props.crossOrigin || process.env.__NEXT_CROSS_ORIGIN
-          }
-          {...modernProps}
-        />
-      )
-    })
+    )
   }
 
   getScripts() {
@@ -780,12 +725,8 @@ export class NextScript extends Component<OriginProps> {
             }}
           />
         ) : null}
-        {/* disableRuntimeJS ? this.getInteractiveScripts() : null */}
-        {/* disableRuntimeJS ? this.getDynamicChunks() : null */}
-        {/* disableRuntimeJS ? this.getInteractiveRuntime() : null */}
-        {disableRuntimeJS ? this.getPolyfillScripts() : null}
-        {disableRuntimeJS ? this.getDynamicChunks() : null}
-        {disableRuntimeJS ? this.getScripts() : null}
+        {disableRuntimeJS ? this.getInteractiveScripts() : null}
+        {disableRuntimeJS ? this.getInteractiveRuntime() : null}
 
         {disableRuntimeJS ? null : this.getPolyfillScripts()}
         {disableRuntimeJS ? null : this.getDynamicChunks()}
